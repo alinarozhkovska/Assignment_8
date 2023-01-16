@@ -62,17 +62,33 @@ class Ball:
             if obstacle.y - obstacle.radius <= self.y - self.radius <= obstacle.y + obstacle.radius and \
                     obstacle.x - obstacle.radius <= self.x - self.radius <= obstacle.x + obstacle.radius:
                 self.y_direction = 3
-                obstacle_list.remove(obstacle)
+
+                if obstacle.health == 1:
+                    obstacle_list.remove(obstacle)
+
+                elif obstacle.health == 2:
+                    obstacle.health -=1
+                    obstacle.color = "blue"
+
             elif obstacle.y - obstacle.radius + 6 >= self.y + self.radius and \
                     obstacle.x - obstacle.radius - 3 <= self.x - self.radius <= obstacle.x + obstacle.radius + 3:
+
                 self.y_direction = -3
-                obstacle_list.remove(obstacle)
+
+                if obstacle.health == 1:
+                    obstacle_list.remove(obstacle)
+
+                elif obstacle.health == 2:
+                    obstacle.health -=1
+                    obstacle.color = "blue"
 
 
 class Obstacle:
-    def __init__(self, x, y, radius, color):
+    def __init__(self, x, y, radius, color, health):
         self.x = x
         self.y = y
+
+        self.health = health
 
         self.radius = radius
 
@@ -93,7 +109,8 @@ obstacle_list = []
 x_pos_obstacle = 15
 y_pos_obstacle = 50
 for i in range(40):
-    obstacle = Obstacle(x_pos_obstacle, y_pos_obstacle, 12, "blue")
+    obstacle_health = random.randint(1,2)
+    obstacle = Obstacle(x_pos_obstacle, y_pos_obstacle, 12, "black" if obstacle_health == 2 else "blue",  obstacle_health)
     x_pos_obstacle += 30
     if i == 19:
         y_pos_obstacle += 30
