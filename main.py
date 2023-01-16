@@ -51,6 +51,16 @@ class Ball:
         else:
             self.x = -10
             self.y = -10
+    def touchElement(self):
+        for obstacle in obstacle_list:
+            if obstacle.y - obstacle.radius <= self.y - self.radius <= obstacle.y + obstacle.radius and \
+                    obstacle.x - obstacle.radius <= self.x - self.radius <= obstacle.x + obstacle.radius:
+                self.y_direction = 3
+                obstacle_list.remove(obstacle)
+            elif obstacle.y - obstacle.radius + 6 >= self.y + self.radius and \
+                    obstacle.x - obstacle.radius - 3 <= self.x - self.radius <= obstacle.x + obstacle.radius + 3:
+                self.y_direction = -3
+                obstacle_list.remove(obstacle)
 class Obstacle:
     def __init__(self, x, y, radius, color):
         self.x = x
@@ -95,6 +105,7 @@ def draw():
         screen.draw.filled_circle((obstacle.x, obstacle.y), obstacle.radius, obstacle.color)
 def update(dt):
     ball.move()
+    ball.touchElement()
     if ball.y > HEIGHT:
         hearts_list.pop()
         ball.y = paddle.y - ball.radius
