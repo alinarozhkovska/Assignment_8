@@ -1,4 +1,5 @@
 import pgzrun, random
+import time
 from pgzero.actor import Actor
 
 WIDTH = 600
@@ -100,11 +101,14 @@ for i in range(40):
     obstacle_list.append(obstacle)
 extra_lives = []
 
+extra_size = Actor("big_bonus", (random.randint(50, 550), random.randint(-300, -50)))
 
+timer = time.time()
 def draw():
     screen.fill((198, 168, 105))
     screen.draw.filled_rect(paddle.get_rect(), paddle.color)
     screen.draw.filled_circle((ball.x, ball.y), ball.radius, ball.color)
+    extra_size.draw()
     for heart in hearts_list:
         heart.draw()
     if len(hearts_list) == 0:
@@ -119,6 +123,7 @@ def draw():
 
 
 def update(dt):
+    global timer
     ball.move()
     ball.touchElement()
     global count_of_lives, x_pos_heart
@@ -140,6 +145,28 @@ def update(dt):
             x_pos_heart = len(hearts_list) * 25 + 15
             hearts_list.append(Actor("heart", pos=(x_pos_heart, 15)))
             extra_lives.remove(extra_live)
+
+    if time.time() > timer + 15:
+        extra_size.y += 2
+
+    if extra_size.y >= HEIGHT:
+        extra_size.y = random.randint(-400, -50)
+        extra_size.x = random.randint(50, 550)
+
+    if extra_size.y >= paddle.y and extra_size.x + extra_size.width / 2 >= paddle.x and extra_size.x - extra_size.width / 2 <= paddle.x + paddle.width:
+        paddle.width *= 1.5
+
+        timer = time.time()
+
+        extra_size.y = random.randint(-400, -50)
+        extra_size.x = random.randint(50, 550)
+
+    if paddle.width > size_paddle[0] and time.time() > timer + 7:
+        paddle.width = size_paddle[0]
+
+
+
+
 
 
 def on_mouse_move(pos):  # (567, 210)
