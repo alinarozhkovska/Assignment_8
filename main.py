@@ -1,6 +1,7 @@
 import pgzrun, random
 import time
 from pgzero.actor import Actor
+from pgzero.rect import Rect
 
 WIDTH = 600
 HEIGHT = 400
@@ -59,38 +60,52 @@ class Ball:
 
     def touchElement(self):
         for obstacle in obstacle_list:
-            if obstacle.y - obstacle.radius <= self.y - self.radius <= obstacle.y + obstacle.radius and \
-                    obstacle.x - obstacle.radius <= self.x - self.radius <= obstacle.x + obstacle.radius:
-                self.y_direction = 3
 
-                if obstacle.health == 1:
+            if self.y - self.radius <= obstacle.y + obstacle.height\
+                and self.x - self.radius <= obstacle.x + obstacle.width\
+                and self.y + self.radius >= obstacle.y - obstacle.height\
+                and self.x + self.radius >= obstacle.x - obstacle.width:
+
+                if self.y_direction > 0:
+                    self.y_direction = -3
+                    self.y -= 3
+                else:
+                    self.y_direction = 3
+                    self.y += 3
+
+                if self.x - self.radius <= obstacle.x + obstacle.width\
+                and self.x + self.radius >= obstacle.x - obstacle.width:
+
+                    if self.x_direction > 0:
+                        self.x_direction = -3
+                        self.x -= 3
+                    else:
+                        self.x_direction = 3
+                        self.x += 3
+
+                if obstacle.health <= 1:
                     obstacle_list.remove(obstacle)
 
                 elif obstacle.health == 2:
-                    obstacle.health -=1
+                    obstacle.health -= 1
                     obstacle.color = "blue"
 
-            elif obstacle.y - obstacle.radius + 6 >= self.y + self.radius and \
-                    obstacle.x - obstacle.radius - 3 <= self.x - self.radius <= obstacle.x + obstacle.radius + 3:
-
-                self.y_direction = -3
-
-                if obstacle.health == 1:
-                    obstacle_list.remove(obstacle)
-
-                elif obstacle.health == 2:
-                    obstacle.health -=1
-                    obstacle.color = "blue"
+                elif obstacle.health == 3:
+                    obstacle.health -= 1
+                    obstacle.color = "black"
 
 
 class Obstacle:
-    def __init__(self, x, y, radius, color, health):
+    def __init__(self, x, y, width, height, color, health):
         self.x = x
         self.y = y
 
         self.health = health
 
-        self.radius = radius
+        self.radius = 15
+
+        self.width = width
+        self.height = height
 
         self.color = color
 
@@ -108,11 +123,12 @@ if len(hearts_list) == 0:
 obstacle_list = []
 x_pos_obstacle = 15
 y_pos_obstacle = 50
-for i in range(40):
-    obstacle_health = random.randint(1,2)
-    obstacle = Obstacle(x_pos_obstacle, y_pos_obstacle, 12, "black" if obstacle_health == 2 else "blue",  obstacle_health)
-    x_pos_obstacle += 30
-    if i == 19:
+obstacle_hard = ["blue", "black", "orange"]
+for i in range(16):
+    obstacle_health = random.randint(1,3)
+    obstacle = Obstacle(x_pos_obstacle, y_pos_obstacle, 50, 25, obstacle_hard[obstacle_health-1],  obstacle_health)
+    x_pos_obstacle += 60
+    if i == 8:
         y_pos_obstacle += 30
         x_pos_obstacle = 15
     obstacle_list.append(obstacle)
@@ -134,7 +150,7 @@ def draw():
         screen.draw.text("YOU WON!", (100, HEIGHT / 2 - 48), fontsize=96, color="red")
 
     for obstacle in obstacle_list:
-        screen.draw.filled_circle((obstacle.x, obstacle.y), obstacle.radius, obstacle.color)
+        screen.draw.filled_rect(Rect((obstacle.x, obstacle.y), (obstacle.width, obstacle.height)), obstacle.color)
     for extra_live in extra_lives:
         extra_live.draw()
 
@@ -182,11 +198,7 @@ def update(dt):
         paddle.width = size_paddle[0]
 
 
-
-
-
-
-def on_mouse_move(pos):  # (567, 210)
+def on_mouse_move(pos):
     if pos[0] + paddle.width / 2 <= WIDTH and pos[0] - paddle.width / 2 >= 0 and len(hearts_list) != 0 and len(
             obstacle_list) != 0:
         paddle.x = pos[0] - paddle.width / 2
