@@ -3,7 +3,7 @@ import time
 from pgzero.actor import Actor
 from pgzero.rect import Rect
 
-WIDTH = 600
+WIDTH = 560
 HEIGHT = 400
 TITLE = "Різдвяний арканоїд"
 
@@ -61,10 +61,10 @@ class Ball:
     def touchElement(self):
         for obstacle in obstacle_list:
 
-            if self.y - self.radius <= obstacle.y + obstacle.height\
-                and self.x - self.radius <= obstacle.x + obstacle.width\
-                and self.y + self.radius >= obstacle.y - obstacle.height\
-                and self.x + self.radius >= obstacle.x - obstacle.width:
+            if self.y - self.radius + 6 <= obstacle.y + obstacle.height\
+                and self.x - self.radius + 6 <= obstacle.x + obstacle.width\
+                and self.y + self.radius + 6 >= obstacle.y\
+                and self.x + self.radius + 6 >= obstacle.x:
 
                 if self.y_direction > 0:
                     self.y_direction = -3
@@ -124,7 +124,7 @@ obstacle_list = []
 x_pos_obstacle = 15
 y_pos_obstacle = 50
 obstacle_hard = ["blue", "black", "orange"]
-for i in range(16):
+for i in range(18):
     obstacle_health = random.randint(1,3)
     obstacle = Obstacle(x_pos_obstacle, y_pos_obstacle, 50, 25, obstacle_hard[obstacle_health-1],  obstacle_health)
     x_pos_obstacle += 60
